@@ -2,11 +2,70 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GeminiService {
-  static const String _apiKey = 'AIzaSyD0wvDIGT69c2SeOf_etTY7-ogWtqOb9T4';
+  static const String _apiKey = 'AIzaSyB75CXjVkrGpvEkULCpfN6_Qo7Zlt7sE40';
   late final GenerativeModel _model;
 
   GeminiService() {
-    _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: _apiKey);
+    _model = GenerativeModel(model: 'gemini-2.5-pro', apiKey: _apiKey);
+  }
+
+  Future<String> generateDiabetesInsights({
+    required Map<String, dynamic> analysis,
+    String selectedHorizon = '90d',
+    String? recentTrends,
+  }) async {
+    final ra = analysis['risk_assessment'] ?? analysis;
+    final horizonKey = 'horizon_${selectedHorizon}';
+    final horizonRisks = (ra['horizon_risks'] ?? {}) as Map<String, dynamic>;
+    final horizon = (horizonRisks[horizonKey] ?? {}) as Map<String, dynamic>;
+
+    final gp = analysis['glucose_predictions'] as Map<String, dynamic>?;
+    final forecast = <Map<String, dynamic>>[];
+    if (gp != null) {
+      final days = (gp['horizons_days'] as List?) ?? [];
+      final p50 = (gp['p50_quantile'] as List?) ?? [];
+      for (int i = 0; i < days.length && i < p50.length; i++) {
+        forecast.add({'day': days[i], 'p50': p50[i]});
+      }
+    }
+
+    final avgGlucose = forecast.isNotEmpty
+        ? (forecast.fold<num>(0, (s, e) => s + (e['p50'] as num)) / forecast.length)
+        : null;
+
+    final context = (ra['context_factors'] ?? {}) as Map<String, dynamic>;
+    final summary = {
+      'selectedHorizon': selectedHorizon,
+      'avgGlucose': avgGlucose == null ? null : (avgGlucose as num).round(),
+      'overallRiskLevel': ra['overall_risk_level'] ?? analysis['overall_risk_level'],
+      'overallRiskScore': ra['overall_risk_score'] ?? analysis['overall_risk_score'],
+      'volatility': horizon['volatility_risk'],
+      'hyperRisk': horizon['hyper_risk'],
+      'hypoRisk': horizon['hypo_risk'],
+      'contextFactors': context,
+      'recentTrends': recentTrends,
+    };
+
+    final prompt = '''
+You are a diabetes care specialist. Create a friendly, plain‑language report in markdown (with emojis).
+Provide:
+- A short summary of current risk with numbers.
+- 3–5 insights explaining what's driving risk (average glucose, highs/lows, volatility).
+- 5–7 day-to-day actions with checkboxes.
+- Lifestyle guidance including smoking 🚭 and alcohol 🍷 always.
+- A brief note for clinicians with 2–3 interventions.
+- When to seek medical help.
+
+Patient Summary:
+${summary}
+
+Rules:
+- Simple language, short sections with headings, bold highlights, lists.
+- 400–550 words.
+''';
+
+    final response = await _model.generateContent([Content.text(prompt)]);
+    return response.text ?? '';
   }
 
   Future<String> generateDietPlan(String userName) async {

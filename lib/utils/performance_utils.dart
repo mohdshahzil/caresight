@@ -6,11 +6,10 @@ import 'dart:async';
 class PerformanceUtils {
   /// Optimize frame rate for smooth animations
   static void optimizeFrameRate() {
-    // Ensure 60fps for smooth animations
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      // Force layout if needed
-      WidgetsBinding.instance.allowFirstFrame();
-    });
+    // Warm up frame without touching first-frame deferral state
+    // Calling allowFirstFrame without a prior deferFirstFrame causes an assert.
+    // A warm-up frame achieves the intended effect safely.
+    SchedulerBinding.instance.scheduleWarmUpFrame();
   }
 
   /// Pre-cache images for faster loading

@@ -119,34 +119,40 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               children: [
                 const Spacer(flex: 2),
 
-                // Animated Health Icon
-                AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _pulseAnimation.value,
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(60),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 30,
-                              offset: const Offset(0, 15),
+                // Animated Health Icon (fixed layout size to avoid screen shift)
+                SizedBox(
+                  width: 144, // 120 * 1.2 (max scale)
+                  height: 144,
+                  child: AnimatedBuilder(
+                    animation: _pulseAnimation,
+                    builder: (context, child) {
+                      return Center(
+                        child: Transform.scale(
+                          scale: _pulseAnimation.value,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(60),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 15),
+                                ),
+                              ],
                             ),
-                          ],
+                            child: const Icon(
+                              Icons.favorite,
+                              size: 60,
+                              color: AppColors.primaryGreen,
+                            ),
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.favorite,
-                          size: 60,
-                          color: AppColors.primaryGreen,
-                        ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 48),

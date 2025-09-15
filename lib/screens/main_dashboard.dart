@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/haptic_utils.dart';
-import 'upload_data_screen.dart';
+import 'diabetes_upload_screen.dart';
 import 'evaluation_metrics_screen.dart';
 import 'explainability_screen.dart';
 import 'medicine_reminder_screen.dart';
@@ -81,7 +81,7 @@ class _MainDashboardState extends State<MainDashboard> {
         index: _selectedIndex,
         children: [
           _buildProfileScreen(),
-          const UploadDataScreen(),
+          const DiabetesUploadScreen(),
           const EvaluationMetricsScreen(),
           const ExplainabilityScreen(),
           _buildDietPlanTab(),

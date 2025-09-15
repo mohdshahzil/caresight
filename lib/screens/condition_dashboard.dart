@@ -272,8 +272,6 @@ class ConditionDashboard extends StatelessWidget {
 
   String _getConditionName(ConditionType condition) {
     switch (condition) {
-      case ConditionType.maternalCare:
-        return 'Maternal Care';
       case ConditionType.cardiovascular:
         return 'Cardiovascular';
       case ConditionType.diabetes:

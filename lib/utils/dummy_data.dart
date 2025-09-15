@@ -4,8 +4,6 @@ import '../models/evaluation_metrics.dart';
 class DummyDataService {
   static List<Patient> getPatientsForCondition(ConditionType condition) {
     switch (condition) {
-      case ConditionType.maternalCare:
-        return _getMaternalCarePatients();
       case ConditionType.cardiovascular:
         return _getCardiovascularPatients();
       case ConditionType.diabetes:
@@ -13,105 +11,6 @@ class DummyDataService {
       case ConditionType.arthritis:
         return _getArthritisPatients();
     }
-  }
-
-  static List<Patient> _getMaternalCarePatients() {
-    return [
-      Patient(
-        id: '1',
-        name: 'Sarah Johnson',
-        age: 28,
-        riskScore: 15.2,
-        riskLevel: RiskLevel.low,
-        condition: ConditionType.maternalCare,
-        vitals: _generateVitals('BP', 'mmHg', 120, 80),
-        riskDrivers: [
-          RiskDriver(
-            name: 'Blood Pressure',
-            importance: 0.35,
-            description: 'Slightly elevated blood pressure readings',
-          ),
-          RiskDriver(
-            name: 'Weight Gain',
-            importance: 0.25,
-            description: 'Above average weight gain pattern',
-          ),
-          RiskDriver(
-            name: 'Age Factor',
-            importance: 0.20,
-            description: 'Optimal maternal age range',
-          ),
-        ],
-        recommendedActions: [
-          'Continue regular prenatal checkups',
-          'Monitor blood pressure daily',
-          'Maintain healthy diet and light exercise',
-        ],
-      ),
-      Patient(
-        id: '2',
-        name: 'Maria Rodriguez',
-        age: 35,
-        riskScore: 45.8,
-        riskLevel: RiskLevel.medium,
-        condition: ConditionType.maternalCare,
-        vitals: _generateVitals('BP', 'mmHg', 140, 90),
-        riskDrivers: [
-          RiskDriver(
-            name: 'Advanced Maternal Age',
-            importance: 0.40,
-            description: 'Higher risk due to age',
-          ),
-          RiskDriver(
-            name: 'Blood Pressure',
-            importance: 0.30,
-            description: 'Elevated blood pressure',
-          ),
-          RiskDriver(
-            name: 'Previous Complications',
-            importance: 0.20,
-            description: 'History of gestational diabetes',
-          ),
-        ],
-        recommendedActions: [
-          'Increased monitoring frequency',
-          'Consult with maternal-fetal medicine specialist',
-          'Consider additional screening tests',
-        ],
-      ),
-      Patient(
-        id: '3',
-        name: 'Jennifer Chen',
-        age: 42,
-        riskScore: 78.5,
-        riskLevel: RiskLevel.high,
-        condition: ConditionType.maternalCare,
-        vitals: _generateVitals('BP', 'mmHg', 160, 100),
-        riskDrivers: [
-          RiskDriver(
-            name: 'Advanced Maternal Age',
-            importance: 0.45,
-            description: 'Significantly increased risk due to age',
-          ),
-          RiskDriver(
-            name: 'Hypertension',
-            importance: 0.35,
-            description: 'Severe hypertension',
-          ),
-          RiskDriver(
-            name: 'Multiple Risk Factors',
-            importance: 0.20,
-            description: 'Combination of multiple risk factors',
-          ),
-        ],
-        recommendedActions: [
-          'Immediate specialist consultation',
-          'Consider high-risk pregnancy management',
-          'Daily blood pressure monitoring',
-          'Potential early delivery planning',
-        ],
-      ),
-    ];
   }
 
   static List<Patient> _getCardiovascularPatients() {

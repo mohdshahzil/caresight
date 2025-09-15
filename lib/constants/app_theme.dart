@@ -8,6 +8,12 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryGreen,
         brightness: Brightness.light,
+      ).copyWith(
+        primary: AppColors.primaryGreen,
+        secondary: AppColors.accentGreen,
+        surface: AppColors.surface,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
       ),
       scaffoldBackgroundColor: AppColors.background,
       cardColor: AppColors.cardBackground,

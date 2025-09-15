@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
-import '../models/patient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/haptic_utils.dart';
-import 'condition_dashboard.dart';
 import 'upload_data_screen.dart';
 import 'evaluation_metrics_screen.dart';
 import 'explainability_screen.dart';
@@ -18,20 +17,54 @@ class MainDashboard extends StatefulWidget {
 
 class _MainDashboardState extends State<MainDashboard> {
   int _selectedIndex = 0;
-  ConditionType _selectedCondition = ConditionType.maternalCare;
+  String _userName = '';
+  String _gender = '';
+  String _location = '';
+  int _age = 0;
+  double? _height;
+  double? _weight;
+  double? _bmi;
+  String _bmiCategory = '';
+  bool _underlyingAllergies = false;
+  bool _drink = false;
+  bool _smoke = false;
+  bool _t2diabetes = false;
+  bool _hypertension = false;
+  bool _cvd = false;
 
-  final List<ConditionType> _conditions = [
-    ConditionType.maternalCare,
-    ConditionType.cardiovascular,
-    ConditionType.diabetes,
-    ConditionType.arthritis,
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileFromPrefs();
+  }
+
+  Future<void> _loadProfileFromPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _userName = prefs.getString('user_name') ?? '';
+        _gender = prefs.getString('gender') ?? '';
+        _location = prefs.getString('location') ?? '';
+        _age = int.tryParse(prefs.getString('age') ?? '') ?? 0;
+        _weight = double.tryParse(prefs.getString('weight') ?? '');
+        _height = double.tryParse(prefs.getString('height') ?? '');
+        _bmi = prefs.getDouble('bmi');
+        _bmiCategory = prefs.getString('bmi_category') ?? '';
+        _underlyingAllergies = prefs.getBool('underlying_allergies') ?? false;
+        _drink = prefs.getBool('drink') ?? false;
+        _smoke = prefs.getBool('smoke') ?? false;
+        _t2diabetes = prefs.getBool('t2diabetes') ?? false;
+        _hypertension = prefs.getBool('hypertension') ?? false;
+        _cvd = prefs.getBool('cvd') ?? false;
+      });
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CareSight Dashboard'),
+        title: const Text('Profile'),
         backgroundColor: AppColors.primaryGreen,
         foregroundColor: Colors.white,
         actions: [
@@ -47,7 +80,7 @@ class _MainDashboardState extends State<MainDashboard> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          _buildConditionTabs(),
+          _buildProfileScreen(),
           const UploadDataScreen(),
           const EvaluationMetricsScreen(),
           const ExplainabilityScreen(),
@@ -240,47 +273,39 @@ class _MainDashboardState extends State<MainDashboard> {
     );
   }
 
-  Widget _buildConditionTabs() {
-    return Column(
-      children: [
-        // Condition Selection Tabs
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _conditions.length,
-            itemBuilder: (context, index) {
-              final condition = _conditions[index];
-              final isSelected = condition == _selectedCondition;
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  label: Text(_getConditionName(condition)),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    HapticUtils.selectionClick();
-                    setState(() {
-                      _selectedCondition = condition;
-                    });
-                  },
-                  selectedColor: AppColors.accentGreen,
-                  checkmarkColor: Colors.white,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textPrimary,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                ),
-              );
-            },
+  Widget _buildProfileScreen() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFE8F5E9), Color(0xFFF7FFF8)],
+        ),
+      ),
+      child: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _loadProfileFromPrefs,
+          color: AppColors.primaryGreen,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 100,
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                _buildProfileHeader(),
+                const SizedBox(height: 16),
+                _buildInfoCards(),
+                const SizedBox(height: 16),
+                _buildHealthFlags(),
+                const SizedBox(height: 80),
+              ],
+            ),
           ),
         ),
-
-        // Condition Dashboard
-        Expanded(child: ConditionDashboard(condition: _selectedCondition)),
-      ],
+      ),
     );
   }
 
@@ -288,16 +313,324 @@ class _MainDashboardState extends State<MainDashboard> {
     return const DietPlanTabView();
   }
 
-  String _getConditionName(ConditionType condition) {
-    switch (condition) {
-      case ConditionType.maternalCare:
-        return 'Maternal Care';
-      case ConditionType.cardiovascular:
-        return 'Cardiovascular';
-      case ConditionType.diabetes:
-        return 'Diabetes';
-      case ConditionType.arthritis:
-        return 'Arthritis';
-    }
+  Widget _buildInfoCards() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
+        int crossAxisCount;
+        if (maxW < 340) {
+          crossAxisCount = 1;
+        } else if (maxW < 700) {
+          crossAxisCount = 2;
+        } else if (maxW < 1000) {
+          crossAxisCount = 3;
+        } else {
+          crossAxisCount = 4;
+        }
+        final items = [
+          _InfoItem('Age', _age > 0 ? '$_age yrs' : '—', Icons.cake),
+          _InfoItem('Gender', _gender.isNotEmpty ? _gender : '—', Icons.wc),
+          _InfoItem(
+            'Height',
+            _height != null ? '${_height!.toStringAsFixed(0)} cm' : '—',
+            Icons.height,
+          ),
+          _InfoItem(
+            'Weight',
+            _weight != null ? '${_weight!.toStringAsFixed(0)} kg' : '—',
+            Icons.monitor_weight,
+          ),
+          _InfoItem(
+            'Location',
+            _location.isNotEmpty ? _location : '—',
+            Icons.location_on,
+          ),
+          _InfoItem(
+            'BMI',
+            _bmi != null
+                ? '${_bmi!.toStringAsFixed(1)}${_bmiCategory.isNotEmpty ? ' • $_bmiCategory' : ''}'
+                : '—',
+            Icons.assessment,
+          ),
+        ];
+
+        // Choose aspect ratio responsively to avoid vertical overflow on short screens
+        double childAspectRatio;
+        if (maxW < 340) {
+          childAspectRatio = 1.8; // more height on extra-narrow screens
+        } else if (maxW < 400) {
+          childAspectRatio = 2.0;
+        } else if (maxW < 700) {
+          childAspectRatio = 2.0; // ensure no vertical overflow on phones
+        } else if (maxW < 1000) {
+          childAspectRatio = 3.0;
+        } else {
+          childAspectRatio = 3.2;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: childAspectRatio,
+            ),
+            itemBuilder: (context, index) {
+              final it = items[index];
+              return _statCard(it.title, it.value, it.icon);
+            },
+          ),
+        );
+      },
+    );
   }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.textLight.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.textLight.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGreen.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.primaryGreen, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHealthFlags() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxW = constraints.maxWidth;
+          final useSingleColumn = maxW < 400;
+          final tileW =
+              useSingleColumn ? maxW : (maxW - 12) / 2; // responsive columns
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: const [
+                  Icon(Icons.health_and_safety, color: AppColors.primaryGreen),
+                  SizedBox(width: 8),
+                  Text(
+                    'Health Profile',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _flagTile('Allergies', _underlyingAllergies, width: tileW),
+                  _flagTile('Drinks', _drink, width: tileW),
+                  _flagTile('Smokes', _smoke, width: tileW),
+                  _flagTile('Type 2 Diabetes', _t2diabetes, width: tileW),
+                  _flagTile('Hypertension', _hypertension, width: tileW),
+                  _flagTile('CVD', _cvd, width: tileW),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _flagTile(String label, bool value, {double? width}) {
+    final color = value ? AppColors.lightGreen : AppColors.textLight;
+    final icon = value ? Icons.check_circle : Icons.remove_circle_outline;
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    final hasProfile = _userName.isNotEmpty || _age > 0 || _gender.isNotEmpty;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primaryGreen, AppColors.lightGreen],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryGreen.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.person,
+                color: AppColors.primaryGreen,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hasProfile
+                        ? (_userName.isEmpty ? 'Your Profile' : _userName)
+                        : 'Complete your profile',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (_age > 0) _buildPill('$_age y'),
+                      if (_gender.isNotEmpty) _buildPill(_gender),
+                      if (_location.isNotEmpty) _buildPill(_location),
+                      if (_bmi != null && _bmi! > 0)
+                        _buildPill(
+                          'BMI ${_bmi!.toStringAsFixed(1)}${_bmiCategory.isNotEmpty ? ' • $_bmiCategory' : ''}',
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPill(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoItem {
+  final String title;
+  final String value;
+  final IconData icon;
+  _InfoItem(this.title, this.value, this.icon);
 }

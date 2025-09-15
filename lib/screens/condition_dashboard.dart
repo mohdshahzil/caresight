@@ -187,7 +187,9 @@ class ConditionDashboard extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: _getRiskColor(patient.riskLevel).withOpacity(0.2),
+          backgroundColor: _getRiskColor(
+            patient.riskLevel,
+          ).withValues(alpha: 0.2),
           child: Icon(Icons.person, color: _getRiskColor(patient.riskLevel)),
         ),
         title: Text(
@@ -207,7 +209,9 @@ class ConditionDashboard extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: _getRiskColor(patient.riskLevel).withOpacity(0.2),
+                    color: _getRiskColor(
+                      patient.riskLevel,
+                    ).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

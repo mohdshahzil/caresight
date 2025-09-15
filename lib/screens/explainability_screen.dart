@@ -57,7 +57,7 @@ class _ExplainabilityScreenState extends State<ExplainabilityScreen> {
                       backgroundColor:
                           !_showLocalExplanation
                               ? AppColors.primaryGreen
-                              : AppColors.primaryGreen.withOpacity(0.3),
+                              : AppColors.primaryGreen.withValues(alpha: 0.3),
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('Global Explanation'),
@@ -75,7 +75,7 @@ class _ExplainabilityScreenState extends State<ExplainabilityScreen> {
                       backgroundColor:
                           _showLocalExplanation
                               ? AppColors.primaryGreen
-                              : AppColors.primaryGreen.withOpacity(0.3),
+                              : AppColors.primaryGreen.withValues(alpha: 0.3),
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('Local Explanation'),
@@ -271,7 +271,9 @@ class _ExplainabilityScreenState extends State<ExplainabilityScreen> {
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: feature.importance,
-                  backgroundColor: AppColors.primaryGreen.withOpacity(0.2),
+                  backgroundColor: AppColors.primaryGreen.withValues(
+                    alpha: 0.2,
+                  ),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.primaryGreen,
                   ),
@@ -392,10 +394,10 @@ class _ExplainabilityScreenState extends State<ExplainabilityScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.primaryGreen.withOpacity(0.05),
+          color: AppColors.primaryGreen.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.primaryGreen.withOpacity(0.2),
+            color: AppColors.primaryGreen.withValues(alpha: 0.2),
             width: 1,
           ),
         ),

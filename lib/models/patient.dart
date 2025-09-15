@@ -1,6 +1,6 @@
 enum RiskLevel { low, medium, high }
 
-enum ConditionType { maternalCare, cardiovascular, diabetes, arthritis }
+enum ConditionType { cardiovascular, diabetes, arthritis }
 
 class Patient {
   final String id;
@@ -38,8 +38,6 @@ class Patient {
 
   String get conditionText {
     switch (condition) {
-      case ConditionType.maternalCare:
-        return 'Maternal Care';
       case ConditionType.cardiovascular:
         return 'Cardiovascular';
       case ConditionType.diabetes:

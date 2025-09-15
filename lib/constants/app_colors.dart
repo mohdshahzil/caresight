@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Healthcare psychology colors
-  static const Color primaryGreen = Color(0xFF2E7D32); // Trust, health, balance
-  static const Color lightGreen = Color(0xFF4CAF50);
-  static const Color accentGreen = Color(0xFF81C784);
+  // Brand colors (updated to #002F38 palette)
+  static const Color primaryGreen = Color(0xFF002F38); // base brand color
+  static const Color lightGreen = Color(
+    0xFF004954,
+  ); // lighter shade for gradients/surfaces
+  static const Color accentGreen = Color(
+    0xFF006B7C,
+  ); // accent shade for emphasis
 
-  static const Color primaryBlue = Color(0xFF1976D2); // Trust, reliability
-  static const Color lightBlue = Color(0xFF42A5F5);
-  static const Color accentBlue = Color(0xFF90CAF9);
+  static const Color primaryBlue = Color(0xFF002F38); // align blues to brand
+  static const Color lightBlue = Color(0xFF004954);
+  static const Color accentBlue = Color(0xFF006B7C);
 
   // Risk alert colors
   static const Color riskOrange = Color(0xFFFF9800);

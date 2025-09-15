@@ -103,7 +103,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -155,7 +155,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
                 children: [
                   TableRow(
                     decoration: BoxDecoration(
-                      color: AppColors.primaryGreen.withOpacity(0.1),
+                      color: AppColors.primaryGreen.withValues(alpha: 0.1),
                     ),
                     children: const [
                       Padding(
@@ -195,7 +195,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Container(
-                          color: AppColors.lightGreen.withOpacity(0.3),
+                          color: AppColors.lightGreen.withValues(alpha: 0.3),
                           child: Text(
                             matrix.truePositives.toString(),
                             textAlign: TextAlign.center,
@@ -206,7 +206,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Container(
-                          color: AppColors.riskOrange.withOpacity(0.3),
+                          color: AppColors.riskOrange.withValues(alpha: 0.3),
                           child: Text(
                             matrix.falseNegatives.toString(),
                             textAlign: TextAlign.center,
@@ -228,7 +228,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Container(
-                          color: AppColors.riskOrange.withOpacity(0.3),
+                          color: AppColors.riskOrange.withValues(alpha: 0.3),
                           child: Text(
                             matrix.falsePositives.toString(),
                             textAlign: TextAlign.center,
@@ -239,7 +239,7 @@ class EvaluationMetricsScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Container(
-                          color: AppColors.lightGreen.withOpacity(0.3),
+                          color: AppColors.lightGreen.withValues(alpha: 0.3),
                           child: Text(
                             matrix.trueNegatives.toString(),
                             textAlign: TextAlign.center,

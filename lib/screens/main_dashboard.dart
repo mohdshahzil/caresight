@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../models/patient.dart';
+import '../utils/haptic_utils.dart';
 import 'condition_dashboard.dart';
 import 'upload_data_screen.dart';
 import 'evaluation_metrics_screen.dart';
 import 'explainability_screen.dart';
+import 'medicine_reminder_screen.dart';
+import 'diet_plan_tab.dart';
 
 class MainDashboard extends StatefulWidget {
   const MainDashboard({super.key});
@@ -48,12 +51,14 @@ class _MainDashboardState extends State<MainDashboard> {
           const UploadDataScreen(),
           const EvaluationMetricsScreen(),
           const ExplainabilityScreen(),
+          _buildDietPlanTab(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
-        onTap: (index) {
+        onTap: (index) async {
+          await HapticUtils.selectionClick();
           setState(() {
             _selectedIndex = index;
           });
@@ -76,6 +81,10 @@ class _MainDashboardState extends State<MainDashboard> {
           BottomNavigationBarItem(
             icon: Icon(Icons.psychology),
             label: 'Explain',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_menu),
+            label: 'Diet Plan',
           ),
         ],
       ),
@@ -112,7 +121,7 @@ class _MainDashboardState extends State<MainDashboard> {
                 Text(
                   'AI Risk Prediction',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                 ),
@@ -157,6 +166,44 @@ class _MainDashboardState extends State<MainDashboard> {
                 _selectedIndex = 3;
               });
               Navigator.pop(context);
+            },
+          ),
+          const Divider(),
+          _buildDrawerItem(
+            icon: Icons.medication,
+            title: 'Medicine Reminders',
+            onTap: () async {
+              await HapticUtils.lightImpact();
+              if (mounted) {
+                Navigator.pop(context);
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder:
+                        (context, animation, secondaryAnimation) =>
+                            const MedicineReminderScreen(),
+                    transitionsBuilder: (
+                      context,
+                      animation,
+                      secondaryAnimation,
+                      child,
+                    ) {
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(1.0, 0.0),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.fastEaseInToSlowEaseOut,
+                          ),
+                        ),
+                        child: child,
+                      );
+                    },
+                    transitionDuration: const Duration(milliseconds: 600),
+                  ),
+                );
+              }
             },
           ),
           const Divider(),
@@ -214,6 +261,7 @@ class _MainDashboardState extends State<MainDashboard> {
                   label: Text(_getConditionName(condition)),
                   selected: isSelected,
                   onSelected: (selected) {
+                    HapticUtils.selectionClick();
                     setState(() {
                       _selectedCondition = condition;
                     });
@@ -234,6 +282,10 @@ class _MainDashboardState extends State<MainDashboard> {
         Expanded(child: ConditionDashboard(condition: _selectedCondition)),
       ],
     );
+  }
+
+  Widget _buildDietPlanTab() {
+    return const DietPlanTabView();
   }
 
   String _getConditionName(ConditionType condition) {

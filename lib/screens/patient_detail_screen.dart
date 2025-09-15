@@ -57,7 +57,7 @@ class PatientDetailScreen extends StatelessWidget {
                   radius: 30,
                   backgroundColor: _getRiskColor(
                     patient.riskLevel,
-                  ).withOpacity(0.2),
+                  ).withValues(alpha: 0.2),
                   child: Icon(
                     Icons.person,
                     size: 30,
@@ -104,7 +104,7 @@ class PatientDetailScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: _getRiskColor(
                           patient.riskLevel,
-                        ).withOpacity(0.2),
+                        ).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -203,7 +203,7 @@ class PatientDetailScreen extends StatelessWidget {
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppColors.primaryGreen.withOpacity(0.1),
+                        color: AppColors.primaryGreen.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -294,7 +294,7 @@ class PatientDetailScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: driver.importance,
-                  backgroundColor: AppColors.riskOrange.withOpacity(0.2),
+                  backgroundColor: AppColors.riskOrange.withValues(alpha: 0.2),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.riskOrange,
                   ),

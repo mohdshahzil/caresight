@@ -49,10 +49,10 @@ class _UploadDataScreenState extends State<UploadDataScreen> {
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGreen.withOpacity(0.1),
+                        color: AppColors.primaryGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(60),
                         border: Border.all(
-                          color: AppColors.primaryGreen.withOpacity(0.3),
+                          color: AppColors.primaryGreen.withValues(alpha: 0.3),
                           width: 2,
                           style: BorderStyle.solid,
                         ),
@@ -127,8 +127,8 @@ class _UploadDataScreenState extends State<UploadDataScreen> {
                         decoration: BoxDecoration(
                           color:
                               _uploadStatus!.contains('success')
-                                  ? AppColors.lightGreen.withOpacity(0.1)
-                                  : AppColors.riskOrange.withOpacity(0.1),
+                                  ? AppColors.lightGreen.withValues(alpha: 0.1)
+                                  : AppColors.riskOrange.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color:
